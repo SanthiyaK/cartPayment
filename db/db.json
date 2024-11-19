@@ -1,0 +1,93 @@
+[
+    {
+      
+      "name": "Pink Princess Dress",
+      "description": "A beautiful pink dress perfect for any princess. Made with soft cotton and lace accents, ideal for parties and special events.",
+      "price": 29.99,
+      "image": "/kid_dresses/product1.webp",
+      "category": "Kids Dresses",
+      "stock": 50
+    },
+    {
+      
+      "name": "Blue Denim Dress",
+      "description": "A stylish and comfortable denim dress with a flared skirt. Great for casual outings and everyday wear.",
+      "price": 24.99,
+      "image": "/kid_dresses/product2.webp",
+      "category": "Kids Dresses",
+      "stock": 30
+    },
+    {
+      
+      "name": "Floral Summer Dress",
+      "description": "A lightweight summer dress with a vibrant floral print. Perfect for sunny days at the park or beach.",
+      "price": 19.99,
+      "image": "/kid_dresses/product3.webp",
+      "category": "Kids Dresses",
+      "stock": 100
+    },
+    {
+      
+      "name": "Red Velvet Holiday Dress",
+      "description": "A luxurious red velvet dress perfect for the holidays or any formal occasion. Features a bow tie at the back for a festive look.",
+      "price": 49.99,
+      "image": "/kid_dresses/product4.jpg",
+      "category": "Kids Dresses",
+      "stock": 20
+    },
+    {
+      
+      "name": "Green Polka Dot Dress",
+      "description": "A cute green dress with white polka dots, perfect for any fun outing. Features puff sleeves and a bow in the front.",
+      "price": 22.99,
+      "image": "/kid_dresses/product5.webp",
+      "category": "Kids Dresses",
+      "stock": 75
+    },
+    {
+      
+      "name": "Yellow Tulle Party Dress",
+      "description": "A beautiful yellow tulle dress with sparkling details, ideal for birthday parties or any special celebration.",
+      "price": 34.99,
+      "image": "/kid_dresses/product6.webp",
+      "category": "Kids Dresses",
+      "stock": 40
+    },
+    {
+      
+      "name": "White Lace Flower Girl Dress",
+      "description": "An elegant white lace dress perfect for flower girls or formal events. The dress features a satin sash and intricate lace detailing.",
+      "price": 59.99,
+      "image": "/kid_dresses/product7.avif",
+      "category": "Kids Dresses",
+      "stock": 15
+    },
+    {
+     
+      "name": "Purple Little Fairy Dress",
+      "description": "A magical purple fairy dress with glittery wings. Perfect for dress-up and imaginative play, or as a costume for a fairy-themed party.",
+      "price": 27.99,
+      "image": "/kid_dresses/product8.avif",
+      "category": "Kids Dresses",
+      "stock": 60
+    },
+    {
+      
+      "name": "Black Velvet Dress",
+      "description": "A classic black velvet dress with a delicate bow at the back. Ideal for family gatherings or formal occasions.",
+      "price": 39.99,
+      "image": "/kid_dresses/product9.webp",
+      "category": "Kids Dresses",
+      "stock": 25
+    },
+    {
+      
+      "name": "Pink Flower Print Dress",
+      "description": "A cute pink dress with flower prints, perfect for casual wear in the spring or summer. Features a comfortable elastic waist.",
+      "price": 19.99,
+      "image": "/kid_dresses/product10.webp",
+      "category": "Kids Dresses",
+      "stock": 80
+    }
+  ]
+  
