@@ -1,10 +1,6 @@
 import Link from "next/link";
 import { SearchBar } from "../action/SearchAction";
 
-
-
-
-
 export default async function ProductsPage({ searchParams }) {
   // Extract the query from the URL search params
   const query = searchParams.query || ''; // Default to empty string if query is not provided
