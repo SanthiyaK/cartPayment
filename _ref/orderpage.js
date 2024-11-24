@@ -1,12 +1,12 @@
-"use client"
+"use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { createOrder } from "../action/OrderAction";
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation'; // to redirect after successful order
+import axios from 'axios';
 
-
-export default function CheckoutPage({ cart, userId }) {
+const CheckoutPage = () => {
   const router = useRouter();
+  const [cart, setCart] = useState([]); // Cart data from context or props
   const [shippingInfo, setShippingInfo] = useState({
     address: '',
     city: '',
@@ -17,7 +17,7 @@ export default function CheckoutPage({ cart, userId }) {
   const [error, setError] = useState('');
   const [orderStatus, setOrderStatus] = useState('');
 
-  // Handle form input changes
+  // Function to handle form input changes
   const handleShippingChange = (e) => {
     const { name, value } = e.target;
     setShippingInfo({ ...shippingInfo, [name]: value });
@@ -31,13 +31,14 @@ export default function CheckoutPage({ cart, userId }) {
     ).toFixed(2);
   };
 
-  // Handle form submission
+  // Handle order creation
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     setLoading(true);
     setError('');
-
-    // Prepare order details
+    
+    // Get the order details
     const orderDetails = {
       orderItems: cart.map(item => ({
         product: item._id,
@@ -47,27 +48,30 @@ export default function CheckoutPage({ cart, userId }) {
       })),
       shippingInfo,
       itemsPrice: calculateTotalPrice(),
-      taxPrice: (calculateTotalPrice() * 0.1).toFixed(2), // 10% tax
+      taxPrice: (calculateTotalPrice() * 0.1).toFixed(2), // Assuming 10% tax
       shippingPrice: 10.00, // Flat shipping price
       totalPrice: (
         parseFloat(calculateTotalPrice()) +
         parseFloat((calculateTotalPrice() * 0.1).toFixed(2)) +
         10.00
       ).toFixed(2),
+      paymentInfo: { id: 'samplePaymentId', status: 'Paid' },
     };
 
     try {
-      // Call the server action to create the order
-      const order = await createOrder(orderDetails, userId);
+      const response = await axios.post('/api/orders', orderDetails, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
 
-      // Order successfully created
-      if (order) {
+      if (response.data.success) {
         setOrderStatus('Order placed successfully!');
-        setCart([]); // Clear the cart after placing the order
-        router.push('/order-success'); // Redirect to the order success page
+        setCart([]); // Clear the cart after order is placed
+        router.push('/order-success'); // Redirect to a success page
       }
     } catch (error) {
-      setError(error.message || 'An error occurred.');
+      setError(error.response?.data?.message || 'An error occurred.');
     } finally {
       setLoading(false);
     }
@@ -140,15 +144,17 @@ export default function CheckoutPage({ cart, userId }) {
           />
         </div>
 
-       {/*  {error && <p className="error-message">{error}</p>}
+        {error && <p className="error-message">{error}</p>}
         {orderStatus && <p className="success-message">{orderStatus}</p>}
 
         <div className="actions">
           <button type="submit" disabled={loading}>
             {loading ? 'Placing Order...' : 'Place Order'}
           </button>
-        </div> */}
+        </div>
       </form>
     </div>
   );
-}
+};
+
+export default CheckoutPage;

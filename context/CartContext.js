@@ -1,4 +1,4 @@
-"use client" // Ensure this runs only on the client
+"use client"; // Ensure this runs only on the client
 
 import React, { createContext, useState, useEffect } from 'react';
 
@@ -8,20 +8,30 @@ const CartContext = createContext();
 // CartProvider component to provide the cart state to other components
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
+  const [shippingInfo, setShippingInfo] = useState({
+    name:'',
+    address: '',
+    city: '',
+    postalCode: '',
+    country: ''
+  });
 
   // Load the cart from localStorage when the component is mounted on the client
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const savedCart = localStorage.getItem('cart');
+      const savedShippingInfo = localStorage.getItem('shippingInfo');
       if (savedCart) {
         setCart(JSON.parse(savedCart));
+      }
+      if (savedShippingInfo) {
+        setShippingInfo(JSON.parse(savedShippingInfo));
       }
     }
   }, []);
 
   // Add product to cart and save to localStorage
   const addToCart = (product) => {
-    // Initialize quantity as 1 when adding the product for the first time
     const updatedCart = [...cart, { ...product, quantity: 1 }];
     setCart(updatedCart);
     if (typeof window !== 'undefined') {
@@ -42,7 +52,6 @@ export const CartProvider = ({ children }) => {
   const increaseQuantity = (productId, prodstock) => {
     const updatedCart = cart.map(item => {
       if (item._id === productId) {
-        // Ensure quantity does not exceed stock
         if (item.quantity < prodstock) {
           return { ...item, quantity: item.quantity + 1 };
         }
@@ -71,8 +80,25 @@ export const CartProvider = ({ children }) => {
     }
   };
 
+  // Set shipping information
+  const setShippingDetails = (shippingData) => {
+    setShippingInfo(shippingData);
+    if (typeof window !== 'undefined') {
+      // Save the updated shipping info to localStorage after state is set
+      localStorage.setItem('shippingInfo', JSON.stringify(shippingData));
+    }
+  };
+
   return (
-    <CartContext.Provider value={{ cart, addToCart, removeFromCart, increaseQuantity, decreaseQuantity }}>
+    <CartContext.Provider value={{
+      cart,
+      shippingInfo,
+      addToCart,
+      removeFromCart,
+      increaseQuantity,
+      decreaseQuantity,
+      setShippingDetails
+    }}>
       {children}
     </CartContext.Provider>
   );

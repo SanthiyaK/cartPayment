@@ -1,24 +1,22 @@
- import dbconnect from "@/db/dbconnect";
-import CartModel from "@/model/cartModel";  // Import Cart model
+// app/actions/checkoutAction.js
+
+import dbconnect from '@/db/dbconnect';
+import Order from '@/model/OrderModel';
 
 
-export async function getCartItems() {
+export async function createOrder(orderDetails, userId) {
+  await dbconnect();
+
   try {
-    await dbconnect()
-    const cartItems = await CartModel.find().populate('product', 'name image price')  // Populate product fields: name, image, price
-    .lean()  
-    .exec();
-   
-      const cartItemsWithStringIds = cartItems.map(cartItem => ({
-        ...cartItem,
-        _id: cartItem._id.toString(),  // Convert _id to string
-      }));
-  
-      console.log(cartItemsWithStringIds);  // Output the modified cart items
-      return cartItemsWithStringIds;
+    // Create a new order in the database
+    const order = await Order.create({
+      ...orderDetails,
+      paidAt: Date.now(),
+      user: userId, // The user ID is passed here
+    });
+
+    return order;
   } catch (error) {
-    console.error('Error fetching cart items:', error);
+    throw new Error('Something went wrong while creating the order.');
   }
 }
- 
-

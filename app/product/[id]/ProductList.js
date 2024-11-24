@@ -2,7 +2,7 @@
 
 import { CartContext } from '@/context/CartContext';
 import Image from 'next/image';
-import { useContext, useState } from 'react';
+import { useContext } from 'react';
 
 export default function ProductList({ product }) {
   

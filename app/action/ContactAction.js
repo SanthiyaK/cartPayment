@@ -20,7 +20,7 @@ export async function sendEmail(formData) {
   const mailOptions = {
     from: email, // From the form data (sender's email)
     to: process.env.NEXT_PUBLIC_SMTP_FROM_EMAIL, // The recipient's email (your email)
-    subject: `Contact Form Submission from ${name}`,
+    subject: `Contact Submission from ${name}`,
     text: `Message from: ${name} (${email})\n\n${message}`,
   };
 
