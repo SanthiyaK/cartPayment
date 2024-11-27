@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function ShippingForm() {
@@ -13,6 +13,23 @@ export default function ShippingForm() {
   });
 
   const router = useRouter();
+
+  // Retrieve userId from localStorage (assuming the user is logged in)
+  const userId = typeof window !== "undefined" ? localStorage.getItem("userId") : null;
+
+  useEffect(() => {
+    // Redirect to login page if no userId exists
+    if (!userId) {
+      router.push("/login");
+      return;
+    }
+
+    // Pre-fill the form with existing shipping info if available
+    const storedShippingInfo = localStorage.getItem(`shippingInfo_${userId}`);
+    if (storedShippingInfo) {
+      setShippingInfo(JSON.parse(storedShippingInfo));
+    }
+  }, [userId, router]);
 
   // Validate the shipping information form
   const validateForm = () => {
@@ -30,8 +47,8 @@ export default function ShippingForm() {
       return;
     }
 
-    // Save the shipping info in localStorage
-    localStorage.setItem('shippingInfo', JSON.stringify(shippingInfo));
+    // Save the shipping info in localStorage for the specific user
+    localStorage.setItem(`shippingInfo_${userId}`, JSON.stringify(shippingInfo));
 
     // Reset the form fields by clearing the state
     setShippingInfo({

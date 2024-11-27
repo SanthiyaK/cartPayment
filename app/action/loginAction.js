@@ -29,7 +29,7 @@ export async function UserLogin(formData) {
          return { success: false, message: "Invalid password." };
       }
       // Create JWT token using secret from .env file
-      const token= await new SignJWT({ user })  // Add user information to the payload
+      const token= await new SignJWT({ user: user._id })  // Add user information to the payload
       .setIssuedAt()  // Set the issued at time
       .setExpirationTime('1h')  // Set token expiration (1 hour)
       .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
@@ -44,7 +44,8 @@ export async function UserLogin(formData) {
          
       });
 
-      const plainUser = user.toString();
+      const plainUser = user._id.toString(); 
+     
       // Return token and user data
       return { success: true, message: "Login successful!", token,  user: plainUser };
    

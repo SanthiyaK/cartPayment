@@ -1,4 +1,4 @@
-import Link from "next/link";
+
 import { SearchBar } from "../action/SearchAction";
 import ProductsList from "./ProductsList";
 

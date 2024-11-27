@@ -2,17 +2,15 @@
 
 import { useRouter } from 'next/navigation';
 import { UserLogin } from '../action/loginAction';
-import { useSearchParams } from 'next/navigation'; 
-
+ 
 export default function LoginForm() {
    const router = useRouter();
-   
-
    const handleSubmit = async (formData) => {
       const result = await UserLogin(formData); 
       if (result.success) {
          console.log(result.token); 
          localStorage.setItem('token', result.token); 
+         localStorage.setItem('userId', result.user);
         router.push("/products")
       }  
    }

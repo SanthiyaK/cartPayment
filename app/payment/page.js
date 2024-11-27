@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
 import { createPaymentIntent } from "../action/PaymentAction";
 import { useRouter } from "next/navigation";
+import { createOrder } from "../action/OrderAction";
 
 export default function PaymentPage() {
   const [clientSecret, setClientSecret] = useState(null);
@@ -23,7 +24,14 @@ export default function PaymentPage() {
       // Call your backend to create the payment intent with the total amount
       async function getPaymentIntent() {
         const result = await createPaymentIntent(totalPrice); // Pass the total price
-        setClientSecret(result.clientSecret);
+
+        // Ensure that the result is plain and serializable
+        if (result && result.clientSecret) {
+          setClientSecret(result.clientSecret);
+        } else {
+          console.error("Failed to create payment intent.");
+          setPaymentStatus("error");
+        }
       }
 
       getPaymentIntent();
@@ -33,37 +41,60 @@ export default function PaymentPage() {
     }
   }, []);
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
-    if (!stripe || !elements) {
+  const handleSubmit = async () => {
+    if (!stripe || !elements || !clientSecret) {
       setPaymentStatus("error");
       return; // Stripe.js has not loaded or elements are not ready
     }
-
+  
     const cardElement = elements.getElement(CardElement);
-
     setPaymentStatus("loading"); // Show loading while waiting for payment confirmation
-
-    const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
-      payment_method: {
-        card: cardElement,
-      },
-    });
-
-    if (error) {
-      console.log(error.message);
-      setPaymentStatus("error");  // Set error status if payment failed
-    } else {
-      if (paymentIntent.status === "succeeded") {
-        setPaymentStatus("success");
-        // Optionally, redirect to another page (confirmation page)
-        setTimeout(() => {
-          router.push("/payment-success"); // Redirect to success page after payment
-        }, 2000);
+  
+    try {
+      const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+        payment_method: {
+          card: cardElement,
+        },
+      });
+  
+      if (error) {
+        console.error("Stripe error:", error);
+        setPaymentStatus("error");
+      } else {
+        // Retrieve userId from localStorage
+        const userId = localStorage.getItem("userId");
+  
+        if (!userId) {
+          throw new Error("User ID is not found. Please log in again.");
+        }
+  
+        // Retrieve cart data from localStorage for this specific user
+        const cartItems = JSON.parse(localStorage.getItem(`cart_${userId}`)) || [];
+  
+        // Retrieve shipping info from localStorage
+        const storedShippingInfo = JSON.parse(localStorage.getItem(`shippingInfo_${userId}`)) || {};
+  
+        // Call createOrder with cart items, total price, user ID, and shipping info
+        const newOrder = await createOrder(totalPrice, cartItems, userId, storedShippingInfo);
+        console.log('Order created:', newOrder);
+  
+        if (paymentIntent.status === "succeeded") {
+          setPaymentStatus("success");
+          
+          // Clear the cart from localStorage after successful payment
+          localStorage.removeItem(`cart_${userId}`); // Remove the user's cart
+  
+          setTimeout(() => {
+            router.push("/payment-success");
+          }, 2000);
+        }
       }
+    } catch (error) {
+      console.error("Payment failed:", error);
+      setPaymentStatus("error");
     }
   };
+  
 
   return (
     <div className="max-w-lg mx-auto p-6 bg-white rounded-lg shadow-md">
@@ -84,7 +115,7 @@ export default function PaymentPage() {
       ) : (
         <>
           {clientSecret ? (
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form action={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <label htmlFor="card-element" className="block text-sm font-medium text-gray-700">
                   Card Information

@@ -7,9 +7,18 @@ export default function ShippingPage() {
   const [cart, setCart] = useState([]);
   const router = useRouter();
 
+  // Load userId (could be from localStorage, context, or an API)
+  const userId = typeof window !== "undefined" ? localStorage.getItem("userId") : null; // Assuming userId is stored in localStorage
+  
   useEffect(() => {
-    const storedShippingInfo = localStorage.getItem("shippingInfo");
-    const storedCart = localStorage.getItem("cart");
+    if (!userId) {
+      router.push("/login"); // Redirect to login page if no userId
+      return;
+    }
+
+    // Load user-specific shipping info and cart from localStorage
+    const storedShippingInfo = localStorage.getItem(`shippingInfo_${userId}`);
+    const storedCart = localStorage.getItem(`cart_${userId}`);
 
     if (storedShippingInfo) {
       setShippingInfo(JSON.parse(storedShippingInfo));
@@ -20,14 +29,16 @@ export default function ShippingPage() {
     if (storedCart) {
       setCart(JSON.parse(storedCart)); // Load the cart info if it's available in localStorage
     }
-  }, [router]);
+  }, [userId, router]);
 
+  // Calculate totals
   const subtotal = cart.reduce((total, item) => total + item.price * item.quantity, 0);
-  const taxRate = 0.08;
+  const taxRate = 0.08; // 8% tax rate
   const tax = subtotal * taxRate;
-  const shippingPrice = 10.00;
+  const shippingPrice = 10.00; // Flat shipping rate
   const totalPrice = (subtotal + tax + shippingPrice).toFixed(2);
 
+  // Process payment and store order details in session storage
   const processPayment = () => {
     const data = {
       itemsPrice: subtotal.toFixed(2),
@@ -36,13 +47,14 @@ export default function ShippingPage() {
       totalPrice
     };
 
-    // Store order details in sessionStorage
+    // Store order details in sessionStorage for use in the payment step
     sessionStorage.setItem("orderInfo", JSON.stringify(data));
 
     // Redirect to the payment page
     router.push("/payment");
   };
 
+  // Show loading state if either shippingInfo or cart is not yet loaded
   if (!shippingInfo || cart.length === 0) {
     return <div>Loading...</div>;
   }
@@ -74,7 +86,7 @@ export default function ShippingPage() {
             </li>
           ))}
         </ul>
-        
+
         {/* Subtotal */}
         <div className="flex justify-between font-semibold">
           <p>Subtotal:</p>
@@ -100,6 +112,7 @@ export default function ShippingPage() {
         </div>
       </div>
 
+      {/* Proceed to Payment Button */}
       <div className="mt-6">
         <button
           onClick={processPayment}

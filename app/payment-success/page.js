@@ -1,16 +1,13 @@
 // app/payment-success/page.js (for Next.js 13+ with app directory)
 "use client";
 
-import { useEffect } from "react";
+
 import { useRouter } from "next/navigation";
 
 export default function SuccessPage() {
   const router = useRouter();
 
-  useEffect(() => {
-    // Optionally, clear sessionStorage or perform other cleanups after successful payment
-    sessionStorage.removeItem("orderInfo");
-  }, []);
+
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
